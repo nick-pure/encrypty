@@ -1,5 +1,6 @@
 from django.shortcuts import render
-import models
-def createProfile(request) :
-    
+from encprofiles import models
+
+
+def createProfile(request):
     models.User(name="")
