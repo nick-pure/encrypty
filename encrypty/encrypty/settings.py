@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'encmessages.apps.EncMessagesConfig',
     'encprofiles.apps.EncProfilesConfig',
-
 ]
 
 MIDDLEWARE = [
