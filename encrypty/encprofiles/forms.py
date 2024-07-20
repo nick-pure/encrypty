@@ -2,6 +2,17 @@ from django.forms import ModelForm
 from django import forms
 from .models import User
 
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import get_user_model
+
+class UserRegistrationForm(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('email',)
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.EmailField(label='Email')
+
 
 class UserForm(ModelForm):
     class Meta:
