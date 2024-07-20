@@ -4,7 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User
 from django.contrib.auth import authenticate, login, logout
 from .decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def register(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -12,11 +14,11 @@ def register(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            return JsonResponse({'status': 'ok', 'data': {'phone': form['phone'], 'password' : form['password']}}, status=200)
+            return JsonResponse({'status': 'ok', 'data': {'phone': form['phone'].value(), 'password' : form['password'].value()}}, status=200)
         else:
             return JsonResponse(form.errors, status=400)
     return JsonResponse({'status': 'wrong', 'info': {'error': 'Invalid HTTP method'}}, status=405)
-
+@csrf_exempt
 def user_login(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -30,6 +32,7 @@ def user_login(request):
             return JsonResponse({'status': 'wrong', 'info': {'error': 'Invalid phone or password'}}, status=405)
     return JsonResponse({'status': 'wrong', 'info': {'error': 'Invalid HTTP method'}}, status=405)
 
+@csrf_exempt
 @login_required
 def user_logout(request):
     if request.method == 'POST':
@@ -89,6 +92,7 @@ def get(request, arg):
         return JsonResponse({'status' : 'ok', 'user' : searcher.get_users(arg)})
     else:
         return JsonResponse({'status': 'wrong', 'info': {'description': 'Invalid HTTP method'}}, status=405)
+
 
 @login_required
 def get_user_phone(request):

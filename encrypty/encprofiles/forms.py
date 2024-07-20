@@ -32,7 +32,7 @@ class UserForm(ModelForm):
         for char in username:
             if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890':
                 raise forms.ValidationError('Invalid characters are used')
-        if User.objects.filter(username=username).exists():
+        if len(username) != 0 and User.objects.filter(username=username).exists():
             raise forms.ValidationError('Username already exists')
         return username
     
