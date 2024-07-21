@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
 class UserStatus(models.IntegerChoices):
     ACTIVE = 1
     OFF = 2
-
+    
 
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -33,7 +33,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(blank=True)
     is_shown_email = models.BooleanField(default=False)
     password = models.CharField(max_length=63)
-
     created = models.DateTimeField(auto_now_add=True)
     
     status = models.IntegerField(choices=UserStatus, default=UserStatus.ACTIVE)
@@ -48,9 +47,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.phone
 
-    def get_all_data(self):
+    def get_available_data(self):
         resp = dict()
-        resp['username'] = self.username
+        if self.username:
+            resp['username'] = self.username
         if self.is_shown_email:
             resp['email'] = self.email
         resp['name'] = self.name
@@ -60,6 +60,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         resp['status'] = self.status
         if self.status != UserStatus.ACTIVE:
             resp['last_seen'] = self.last_seen
+        resp['created'] = self.created
+        resp['id'] = self.id
+        return resp
+    
+    def get_all_data(self):
+        resp = dict()
+        if self.username:
+            resp['username'] = self.username
+        if self.email:
+            resp['email'] = self.email
+            resp['is_shown_email'] = self.is_shown_email
+        resp['name'] = self.name
+        if self.phone:
+            resp['phone'] = self.phone
+            resp['is_shown_phone'] = self.is_shown_phone
+        resp['description'] = self.description
+        resp['status'] = self.status
         resp['created'] = self.created
         resp['id'] = self.id
         return resp

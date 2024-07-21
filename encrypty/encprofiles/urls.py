@@ -4,12 +4,11 @@ from . import views
 
 app_name = "encprofiles"
 urlpatterns = [
-    path('get_user_by_username/<str:username>', views.get_by_username, name='getByUsername'),
-    path('get_user_by_phone/<str:phone>', views.get_by_phone, name='getByPhone'),
-    path('get_user_by_id/<str:id>', views.get_by_id, name='getById'),
-    path('get_user/<str:arg>', views.get, name='get'),
+    path('get_user_by_<str:field>', views.get_by_, name='getBy'),
+    path('get_user/', views.get, name='get'),
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
-    path('get_my_phone/', views.get_user_phone, name='getMyPhone'),
+    path('get_my_profile/', views.get_my_profile, name='getMyProfile'),
+    path('edit_profile_<str:field>/', views.edit_profile, name='edit_profile'),
 ]

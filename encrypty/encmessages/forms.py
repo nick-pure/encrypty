@@ -1,14 +1,14 @@
 from django.forms import ModelForm
 from django import forms
-from .models import ChatPatricipant, PersonalChat, PersonalMessage
+from .models import PersonalChat, PersonalMessage
 
 class PersonalChatForm(ModelForm):
     class Meta:
         model = PersonalChat
-        fields = ['patricipants']
+        fields = ['participants']
 
 class PersonalMessageForm(ModelForm):
-    class Mets:
+    class Meta:
         model = PersonalMessage
         fields = ['encrypted_message']
 

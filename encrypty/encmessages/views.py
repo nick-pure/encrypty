@@ -13,11 +13,15 @@ def create_chat(request):
             user1 = User.objects.get(id=request.user.id)
             user2 = User.objects.get(id=data['id'])
             form = PersonalChatForm(participants=[user1, user2])
-            if form.is_valid() and PersonalChat.objects:
-                form.save()
-                return JsonResponse({'status': 'ok', 'info': {'description': 'Chat is successfuly created'}}, status=200)
-            else:
-                return JsonResponse({'status': 'wrong', 'info': {'error': 'Data is invalid'}}, status=400)
+            try:
+                PersonalChat.objects.get(participants=[user1, user2])
+                return JsonResponse({'status': 'ok', 'info': {'description': 'Chat is already created'}}, status=200)
+            except:
+                if form.is_valid():
+                    form.save()
+                    return JsonResponse({'status': 'ok', 'info': {'description': 'Chat is successfuly created'}}, status=200)
+                else:
+                    return JsonResponse({'status': 'wrong', 'info': {'error': 'Data is invalid'}}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'status': 'wrong', 'info': {'error': 'The second user id is invalid'}}, status=401)
 
@@ -27,3 +31,4 @@ def send_message(request):
         form = PersonalChatForm(request.POST)
     else:
         return JsonResponse({'status': 'wrong', 'info': {'error': 'Invalid HTTP method'}}, status=405)
+

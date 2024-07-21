@@ -4,5 +4,6 @@ from . import views
 
 app_name = "encmessages"
 urlpatterns = [
-    path("", views.index, name="index"),
+    path('create_chat/', views.create_chat, name='create_chat'),
+    path('send_text/', views.send_message, name='send_text'),
 ]
