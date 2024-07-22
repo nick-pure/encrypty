@@ -1,12 +1,16 @@
 from django.db import models
 from encprofiles.models import User
 
+class Membership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat = models.ForeignKey('PersonalChat', on_delete=models.CASCADE)
+
 class PersonalChat(models.Model):
-    participants = models.ManyToManyField(User)
+    participants = models.ManyToManyField(User, through=Membership)
     created_at = models.DateTimeField(auto_now_add=True)
     new_messages_number_for_first = models.IntegerField(default=0)
     new_messages_number_for_second = models.IntegerField(default=0)
-    last_message = models.ForeignKey('PersonalMessage', default=None, on_delete=models.CASCADE)
+    last_message = models.ForeignKey('PersonalMessage', null=True, on_delete=models.CASCADE)
     
 class PersonalMessage(models.Model):
     chat = models.ForeignKey(PersonalChat, on_delete=models.CASCADE)

@@ -7,22 +7,26 @@ from encprofiles.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 class Editor:
+    @classmethod
     def edit_user(self, user, field, new_value):
-        user = User.objects.get(id=user)
-        if eval(f"user.{field}") == new_value:
+        if eval(f"user.{field} == new_value"):
             return
-        if field in ['username', 'email']:
+        if field == 'name' and not new_value:
+            raise ValueError('Name can\'t be nothing')
+        if field == 'email' or field == 'username':
             try:
                 eval(f"User.objects.get({field}=new_value)")
-                raise ValueError("Field is already used")
+                raise ValueError(f'{str(field).capitalize()} already exists')
             except User.DoesNotExist:
-                eval(f"user.{field} = new_value")
+                setattr(user, field, new_value)
                 user.save()
-        else:
-            eval(f"user.{field} = new_value")
-            user.save()
+        if new_value == "True":
+            new_value = True
+        elif new_value == "False":
+            new_value = False
+        setattr(user, field, new_value)
+        user.save()
 
-editor = Editor()
 
 @login_required
 def edit_profile(request, field):
@@ -30,9 +34,8 @@ def edit_profile(request, field):
         if field not in ['name', 'description', 'username', 'email', 'is_shown_phone', 'is_shown_email']:
             return JsonResponse({'status': 'wrong', 'info': {'description': 'Invalid field'}}, status=401)
         try:
-            
-            editor.edit_user(request.user.id, field, request.POST['new_value'])
-            return JsonResponse({'status': 'ok', 'info': {'description': f"Profile is successfuly edited"}}, status=403)
+            Editor.edit_user(request.user, field, request.POST['new_value'])
+            return JsonResponse({'status': 'ok', 'info': {'description': f"Profile is successfuly edited"}}, status=200)
         except ValueError as e:
             return JsonResponse({'status': 'wrong', 'info': {'description': f"{e}"}}, status=403)
     else:

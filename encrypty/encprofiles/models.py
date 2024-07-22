@@ -1,3 +1,4 @@
+from typing import Any
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
@@ -44,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
 
-    def __str__(self):
+    def __str__(self):  
         return self.phone
 
     def get_available_data(self):

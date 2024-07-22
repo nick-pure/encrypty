@@ -10,5 +10,5 @@ class PersonalChatForm(ModelForm):
 class PersonalMessageForm(ModelForm):
     class Meta:
         model = PersonalMessage
-        fields = ['encrypted_message']
+        fields = ['encrypted_message', 'chat', 'sender']
 

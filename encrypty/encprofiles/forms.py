@@ -34,7 +34,15 @@ class UserForm(ModelForm):
                 raise forms.ValidationError('Invalid characters are used')
         if len(username) != 0 and User.objects.filter(username=username).exists():
             raise forms.ValidationError('Username already exists')
+        if len(username) != 0 and len(username) <= 4:
+            raise forms.ValidationError('Username is too short')
         return username
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if len(name) == 0:
+            raise forms.ValidationError('Name can\'t be nothing')
+        return name
     
     def clean_password(self):
         password = self.cleaned_data['password']
