@@ -5,7 +5,7 @@ from encprofiles.models import User
 from django.contrib.auth import authenticate, login, logout
 from encprofiles.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-
+from .checker import single_way_check, few_ways_checker
 class Editor:
     @classmethod
     def edit_user(self, user, field, new_value):
@@ -29,6 +29,7 @@ class Editor:
 
 
 @login_required
+@single_way_check('new_value')
 def edit_profile(request, field):
     if request.method == 'POST':
         if field not in ['name', 'description', 'username', 'email', 'is_shown_phone', 'is_shown_email']:

@@ -6,7 +6,7 @@ from encprofiles.models import User
 from django.db.models import Q
 from .models import PersonalMessage, PersonalChat
 from .responses import Ok, Er, Data
-from .checker import single_way_check
+from .checker import single_way_check, few_ways_checker, method_checker
 
 class Chatter:
     @classmethod
@@ -22,6 +22,13 @@ class Chatter:
             return True
         else:
             return False
+
+@login_required
+@method_checker('GET')
+def get_chats(request):
+    chats = PersonalChat.objects.filter(Q(first_participant=request.user) | Q(second_participant=request.user)).values()
+    return Data(list(chats), 200)
+    
 
 @login_required
 @single_way_check('chat_id')
@@ -42,6 +49,7 @@ def get_chat(request):
         return Er('Invalid HTTP method', 405)
 
 @login_required
+@few_ways_checker(['user_id', 'message'], ['chat_id', 'message'])
 def send_message(request):
     if request.method == 'POST':
         data = request.POST
@@ -67,8 +75,6 @@ def send_message(request):
                     return Er('Chat doesn\'t exist', 404)
             except PersonalChat.DoesNotExist:
                 return Er('Chat doesn\'t exist', 404)
-        else:
-            return Er('Invalid request', 400)
         message = PersonalMessageForm({'encrypted_message' : encrypted_message, 'chat' : chat_id, 'sender' : second_user})
         message.save()
         return Ok('Message is successfuly sent', 200)

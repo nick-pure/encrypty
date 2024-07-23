@@ -5,6 +5,8 @@ from encprofiles.models import User
 from django.contrib.auth import authenticate, login, logout
 from encprofiles.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from .checker import single_way_check, few_ways_checker
+from .responses import Ok, Er, Data
 
 class Searcher:
     def get_user(self, arg, user_searcher_arg):
@@ -44,19 +46,19 @@ searcher = Searcher()
 def get_by_(request, field):
     if request.method == 'GET':
         if field not in ['id', 'username', 'phone', 'email']:
-            return JsonResponse({'status': 'wrong', 'info': {'description': 'Invalid field'}}, status=405) 
-        return JsonResponse({'status' : 'ok', 'user' : searcher.get_user({field: request.GET['arg']}, eval(f"request.user.{field}"))}, status=200)
+            return Er('Invalid field', 405) 
+        return Data({'user' : searcher.get_user({field: request.GET['arg']}, eval(f"request.user.{field}"))}, 200)
     else:
-        return JsonResponse({'status': 'wrong', 'info': {'description': 'Invalid HTTP method'}}, status=405)
+        return Er('Invalid HTTP method', 405)
     
 @login_required
 def get(request):   
     if request.method == 'GET':
-        return JsonResponse({'status' : 'ok', 'user' : searcher.get_users(request.GET['arg'], request.user)}, status=200)
+        return Data({'users' : searcher.get_users(request.GET['arg'], request.user)}, status=200)
     else:
-        return JsonResponse({'status': 'wrong', 'info': {'description': 'Invalid HTTP method'}}, status=405)
+        return Er('Invalid HTTP method', 405)
 
 @login_required
 def get_my_profile(request):
     if request.method == 'GET':
-        return JsonResponse({'status' : 'ok', 'user' : request.user.get_all_data()}, status=200)
+        return Er('Invalid HTTP method', 405)
