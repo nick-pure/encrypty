@@ -81,4 +81,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         resp['created'] = self.created
         resp['id'] = self.id
         return resp
-

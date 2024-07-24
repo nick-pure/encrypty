@@ -7,7 +7,8 @@ class PersonalChat(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     new_messages_number_for_first = models.IntegerField(default=0)
     new_messages_number_for_second = models.IntegerField(default=0)
-    last_message = models.ForeignKey('PersonalMessage', null=True, on_delete=models.CASCADE)
+    last_message_for_first = models.ForeignKey('PersonalMessage', related_name='as_first', null=True, on_delete=models.CASCADE)
+    last_message_for_second = models.ForeignKey('PersonalMessage', related_name='as_second', null=True, on_delete=models.CASCADE)
     
 class PersonalMessage(models.Model):
     chat = models.ForeignKey(PersonalChat, on_delete=models.CASCADE)

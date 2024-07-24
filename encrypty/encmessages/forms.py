@@ -5,7 +5,7 @@ from .models import PersonalChat, PersonalMessage
 class PersonalChatForm(ModelForm):
     class Meta:
         model = PersonalChat
-        fields = ['first_participant', 'second_participant']
+        fields = ['first_participant', 'second_participant', 'last_message_for_first', 'last_message_for_first']
 
 class PersonalMessageForm(ModelForm):
     class Meta:

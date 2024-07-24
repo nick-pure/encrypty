@@ -9,6 +9,10 @@ from .checker import *
 from .responses import *
 
 @csrf_exempt
+def crya(request):
+    return Ok('Hello!', 200)
+
+@csrf_exempt
 @single_way_check('name', 'phone', 'password')
 def register(request):
     if request.method == 'POST':
@@ -23,24 +27,26 @@ def register(request):
     return Er('Invalid HTTP method', 405)
 
 @csrf_exempt
+@method_checker('POST')
 @single_way_check('phone', 'password')
 def user_login(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        phone = form['phone'].value()
-        password = form['password'].value()
-        user = authenticate(request, phone=phone, password=password)
-        if user is not None:
-            login(request, user)
-            return Ok('Login successful', 200)
-        else:
-            return Er('Invalid phone or password', 405)
-    return Er('Invalid HTTP method', 405)
+    form = UserForm(request.POST)
+    phone = form['phone'].value()
+    try:
+        User.objects.get(phone=phone)
+    except User.DoesNotExist:
+        return Er('User doesn\'t exist', 405)
+    password = form['password'].value()
+    user = authenticate(request, phone=phone, password=password)
+    if user is not None:
+        login(request, user)
+        return Ok('Login successful', 200)
+    else:
+        return Er('Invalid phone or password', 405)
 
 @csrf_exempt
+@method_checker('POST')
 @login_required
 def user_logout(request):
-    if request.method == 'POST':
-        logout(request)
-        return Ok('Logout successful', 200)
-    return Er('Invalid HTTP method', 405)
+    logout(request)
+    return Ok('Logout successful', 200)
