@@ -6,7 +6,7 @@ class Ok(JsonResponse):
 
 class Er(JsonResponse):
     def __init__(self, error, status):
-        super().__init__({'status' : 'erorr', 'info' : {'error' : error}}, status=status)
+        super().__init__({'status' : 'error', 'info' : {'error' : error}}, status=status)
 
 class Data(JsonResponse):
     def __init__(self, data, status):

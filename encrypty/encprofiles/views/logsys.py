@@ -13,18 +13,17 @@ def crya(request):
     return Ok('Hello!', 200)
 
 @csrf_exempt
+@method_checker('POST')
 @single_way_check('name', 'phone', 'password')
 def register(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            return Data({'phone': form['phone'].value(), 'password' : form['password'].value()}, 200)
-        else:
-            return Er(form.errors, 400)
-    return Er('Invalid HTTP method', 405)
+    form = UserForm(request.POST)
+    if form.is_valid():
+        user = form.save(commit=False)
+        user.set_password(form.cleaned_data['password'])
+        user.save()
+        return Data({'phone': form['phone'].value(), 'password' : form['password'].value()}, 200)
+    else:
+        return Er(form.errors, 400)
 
 @csrf_exempt
 @method_checker('POST')

@@ -32,10 +32,13 @@ def single_way_check(*required):
                 return Er(f'Missing arguments : {print_arr(missed)}', 405)
             elif request.method == 'POST':
                 data = request.POST
+                missed = list()
                 for r in required:
                     if r not in data:
-                        return Er(f'Missing arguments : {r}', 405)
-                return func(request, *args, **kwargs)
+                        missed.append(r)
+                if len(missed) == 0:
+                    return func(request, *args, **kwargs)
+                return Er(f'Missing arguments : {print_arr(missed)}', 405)
             else:
                 return Er('Invalid HTTP method', 405)
         return wrapper

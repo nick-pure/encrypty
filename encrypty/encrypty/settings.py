@@ -27,16 +27,8 @@ SECRET_KEY = 'django-insecure-syr4r)45p)t@=hoawap2m4tuxl02@tbt89m)-al96=9c$3i5cv
 DEBUG = True
 ALLOWED_HOSTS = []
 CORS_ORIGIN_ALLOW_ALL = True
-# Application definition
-CHANNELS_LAYERS = {
-  'default': {
-    'BACKEND': 'channels.layers.InMemoryChannelLayer'
-  }
-}
 
 INSTALLED_APPS = [
-    'daphne',
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,7 +70,6 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'encrypty.asgi.application'
 WSGI_APPLICATION = 'encrypty.wsgi.application'
 
 
