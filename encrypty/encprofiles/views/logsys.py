@@ -9,8 +9,15 @@ from .checker import *
 from .responses import *
 
 @csrf_exempt
-def crya(request):
-    return Ok('Hello!', 200)
+@login_required
+def check_auth(request):
+    return JsonResponse({'isAuthenticated': True})
+
+@csrf_exempt
+def check_auth_not_logged_in(request):
+    return JsonResponse({'isAuthenticated': False})
+
+
 
 @csrf_exempt
 @method_checker('POST')

@@ -7,6 +7,7 @@ from django.db.models import Q
 from .models import PersonalMessage, PersonalChat
 from .responses import Ok, Er, Data
 from .checker import single_way_check, few_ways_checker, method_checker
+from django.views.decorators.csrf import csrf_exempt
 
 class Chatter:
     @classmethod
@@ -23,14 +24,14 @@ class Chatter:
         else:
             return False
 
-
+@csrf_exempt
 @login_required
 @method_checker('GET')
 def get_chats(request):
     chats = PersonalChat.objects.filter(Q(first_participant=request.user) | Q(second_participant=request.user)).values()
     return Data(list(chats), 200)
     
-
+@csrf_exempt
 @login_required
 @method_checker('GET')
 @single_way_check('chat_id')
@@ -47,6 +48,7 @@ def get_chat(request):
     except PersonalChat.DoesNotExist:
         return Er('Personal chat doesn\'n exist', 404)
 
+@csrf_exempt
 @login_required
 @method_checker('POST')
 @single_way_check('message_id', 'new_message')
@@ -60,7 +62,7 @@ def edit_message(request):
         return Er('Message doesn\'t exist', 404)
     
 
-
+@csrf_exempt
 @login_required
 @method_checker('POST')
 @few_ways_checker(['user_id', 'message'], ['chat_id', 'message'])

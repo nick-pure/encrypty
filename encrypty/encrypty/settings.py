@@ -27,6 +27,10 @@ SECRET_KEY = 'django-insecure-syr4r)45p)t@=hoawap2m4tuxl02@tbt89m)-al96=9c$3i5cv
 DEBUG = True
 ALLOWED_HOSTS = []
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -44,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-  #  'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
