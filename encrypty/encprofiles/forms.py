@@ -47,7 +47,7 @@ class UserForm(ModelForm):
     def clean_password(self):
         password = self.cleaned_data['password']
         for char in password:
-            if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890!@#$%^&*():;\'\"/\\?><~':
+            if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890~`!@#$%^&*()_-+={[}]|\:;"\'<,>.?/':
                 raise forms.ValidationError('Invalid characters are used')
         if len(password) < 8:
             raise forms.ValidationError('Password is too short')

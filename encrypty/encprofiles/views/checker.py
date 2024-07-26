@@ -32,7 +32,6 @@ def single_way_check(*required):
                 return Er(f'Missing arguments : {print_arr(missed)}', 405)
             elif request.method == 'POST':
                 data = request.POST
-                print(request.POST)
                 missed = list()
                 for r in required:
                     if r not in data:

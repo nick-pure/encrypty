@@ -17,13 +17,17 @@ def crya(request):
 @single_way_check('name', 'phone', 'password')
 def register(request):
     form = UserForm(request.POST)
+    print(request.POST)
     if form.is_valid():
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
         user.save()
         return Data({'phone': form['phone'].value(), 'password' : form['password'].value()}, 200)
     else:
-        return Er(form.errors, 400)
+        err = str()
+        for key, value in dict(form.errors).items():
+            err = key + ': ' + value[0] + '; '
+        return Er(err[:-2], 400)
 
 @csrf_exempt
 @method_checker('POST')
