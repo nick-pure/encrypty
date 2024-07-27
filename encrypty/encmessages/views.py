@@ -28,7 +28,23 @@ class Chatter:
 @login_required
 @method_checker('GET')
 def get_chats(request):
-    chats = PersonalChat.objects.filter(Q(first_participant=request.user) | Q(second_participant=request.user)).values()
+    chats = list(PersonalChat.objects.filter(Q(first_participant=request.user) | Q(second_participant=request.user)).values())
+    for chat in chats:
+        if chat['second_participant_id'] != request.user.id:
+            chat['participant'] = str(chat['second_participant_id'])
+            chat['new_messages'] = chat['new_messages_number_for_second']
+            chat['last_message'] = chat['last_message_for_second_id']
+        else:
+            chat['participant'] = str(chat['first_participant_id'])
+            chat['new_messages'] = chat['new_messages_number_for_first']
+            chat['last_message'] = chat['last_message_for_first_id']
+        del chat['new_messages_number_for_first']
+        del chat['new_messages_number_for_second']
+        del chat['last_message_for_first_id']
+        del chat['last_message_for_second_id']
+        del chat['first_participant_id']
+        del chat['second_participant_id']
+        chat['created_at'] = chat['created_at']
     return Data(list(chats), 200)
     
 @csrf_exempt
@@ -43,10 +59,37 @@ def get_chat(request):
         if not Chatter.consist(chat_id, request.user.id):
             return Er('Personal chat doesn\'n exist', 404)
         messages = PersonalMessage.objects.filter(chat=chat)
+        response = list()
         Chatter.read(messages, chat_id, request.user)
-        return Data({'messages' : list(messages.values())}, 200)
+        messages = list(messages)
+        for i in range(len(messages)):
+            messages[i] = messages[i].get_available_date()
+            if request.user.id == messages[i]['sender'] and messages[i]['is_deleted_for_sender'] or request.user.id != messages[i]['sender'] and messages[i]['is_deleted_for_receiver']:
+                pass
+            else:
+                if messages[i]['sender'] == str(request.user.id):
+                    messages[i]['amISender'] = True
+                else:
+                    messages[i]['amISender'] = False
+                del messages[i]['is_deleted_for_sender']
+                del messages[i]['is_deleted_for_receiver']
+            response.append(messages[i])
+        return Data({'messages' : response}, 200)
     except PersonalChat.DoesNotExist:
         return Er('Personal chat doesn\'n exist', 404)
+
+@csrf_exempt
+@login_required
+@method_checker('GET')
+@single_way_check('message_id')
+def get_message(request):
+    data = request.GET
+    chat_id = data['message_id']
+    try:
+        message = PersonalMessage.objects.get(id=chat_id).get_available_date()
+        return Data({'message' : message}, 200)
+    except PersonalMessage.DoesNotExist:
+        return Er('Personal message doesn\'n exist', 404)
 
 @csrf_exempt
 @login_required
@@ -87,7 +130,7 @@ def send_message(request):
     elif 'chat_id' in dict(data):
         chat_id = data['chat_id']
         try: 
-            PersonalChat.objects.get(chat_id=chat_id)
+            PersonalChat.objects.get(id=chat_id)
             if not Chatter.consist(chat_id, request.user.id):
                 return Er('Chat doesn\'t exist', 404)
         except PersonalChat.DoesNotExist:

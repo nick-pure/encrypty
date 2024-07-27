@@ -18,8 +18,6 @@ class Searcher:
             if key == 'phone' or key == 'email':
                 if not eval(f"data.is_shown_{key}"):
                     return {}
-            if eval(f"data.{key}") == user_searcher_arg:
-                return {}
             return data.get_available_data()
         except User.DoesNotExist:
             return {}
@@ -46,7 +44,7 @@ searcher = Searcher()
 def get_by_(request, field):
     if request.method == 'GET':
         if field not in ['id', 'username', 'phone', 'email']:
-            return Er('Invalid field', 405) 
+            return Er('Invalid field', 405)
         return Data({'user' : searcher.get_user({field: request.GET['arg']}, eval(f"request.user.{field}"))}, 200)
     else:
         return Er('Invalid HTTP method', 405)

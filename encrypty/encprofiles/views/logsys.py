@@ -7,15 +7,14 @@ from encprofiles.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .checker import *
 from .responses import *
+from django.contrib.auth.models import AnonymousUser
+from django.middleware.csrf import get_token
 
 @csrf_exempt
-@login_required
 def check_auth(request):
-    return JsonResponse({'isAuthenticated': True})
-
-@csrf_exempt
-def check_auth_not_logged_in(request):
-    return JsonResponse({'isAuthenticated': False})
+    if not isinstance(request.user, AnonymousUser):
+        return Data({'isAuthenticated': True}, 200)
+    return Data({'isAuthenticated': False}, 400)
 
 
 
@@ -24,7 +23,6 @@ def check_auth_not_logged_in(request):
 @single_way_check('name', 'phone', 'password')
 def register(request):
     form = UserForm(request.POST)
-    print(request.POST)
     if form.is_valid():
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
@@ -50,7 +48,9 @@ def user_login(request):
     user = authenticate(request, phone=phone, password=password)
     if user is not None:
         login(request, user)
-        return Ok('Login successful', 200)
+        response = Ok('Login successful', 200)
+        response.set_cookie('csrftoken', get_token(request))
+        return response
     else:
         return Er('Invalid phone or password', 405)
 

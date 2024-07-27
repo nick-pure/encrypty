@@ -8,4 +8,5 @@ urlpatterns = [
     path('send_text/', views.send_message, name='send_text'),
     path('get_chats/', views.get_chats, name='get_chats'),
     path('edit_text/', views.edit_message, name='edit'),
+    path('get_message', views.get_message, name='get_message'),
 ]
